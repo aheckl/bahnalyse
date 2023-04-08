@@ -1,0 +1,11 @@
+tl: Trip Label (generelle Infos zum Zug/Fahrt)
+c: Zugtyp, z.B. ICE oder S für S-Bahn
+n & o: irgendwelche Zugnummern, nicht relevant
+f & t: nicht relevant
+
+ar: arrival
+dp: departure
+pt: planned time
+pp: planned platform (Gleisnummer)
+l: Linie, also z.B. 1 für S1
+ppth: planned path
