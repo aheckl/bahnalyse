@@ -1,3 +1,5 @@
+svn log --quiet https://your-svn-repo-url | grep '^r' | awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}' | sort | uniq
+
 Write-Output "Programm gestartet..."
 
 $ScriptPath = $MyInvocation.MyCommand.Path
