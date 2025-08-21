@@ -1,0 +1,72 @@
+Sub EindeutigeSortierungOhneLuecken()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim dict As Object
+    Dim Bereich As Variant
+    Dim i As Variant
+    
+    Set ws = ThisWorkbook.Sheets("Tabelle1") ' Arbeitsblattname anpassen
+    lastRow = ws.Cells(ws.Rows.count, "A").End(xlUp).Row
+    
+    ' Dictionary für Bereiche
+    Set dict = CreateObject("Scripting.Dictionary")
+    
+    ' Alle Zeilen nach Bereich sammeln
+    For i = 2 To lastRow
+        Bereich = ws.Cells(i, 3).Value
+        If Not dict.Exists(Bereich) Then
+            dict.Add Bereich, New Collection
+        End If
+        dict(Bereich).Add i ' Zeilennummer merken
+    Next i
+    
+    ' Jeden Bereich sortieren und durchnummerieren
+    Dim coll As Collection
+    For Each Bereich In dict.Keys
+        Set coll = dict(Bereich)
+        
+        ' Array mit Sortierung + Name + Zeile
+        Dim tempArr() As Variant
+        ReDim tempArr(1 To coll.count, 1 To 3)
+        
+        Dim idx As Long
+        idx = 1
+        For Each i In coll
+            tempArr(idx, 1) = ws.Cells(i, 4).Value ' Sortierung
+            tempArr(idx, 2) = ws.Cells(i, 1).Value ' Name
+            tempArr(idx, 3) = i                    ' Zeile
+            idx = idx + 1
+        Next i
+        
+        ' Sortieren: erst nach Sortierung, dann nach Name
+        Dim j As Long, k As Long
+        Dim tmp1 As Variant, tmp2 As Variant, tmp3 As Variant
+        For j = 1 To UBound(tempArr) - 1
+            For k = j + 1 To UBound(tempArr)
+                If (tempArr(j, 1) > tempArr(k, 1)) Or _
+                   (tempArr(j, 1) = tempArr(k, 1) And tempArr(j, 2) > tempArr(k, 2)) Then
+                   
+                    ' Tauschen
+                    tmp1 = tempArr(j, 1)
+                    tmp2 = tempArr(j, 2)
+                    tmp3 = tempArr(j, 3)
+                    
+                    tempArr(j, 1) = tempArr(k, 1)
+                    tempArr(j, 2) = tempArr(k, 2)
+                    tempArr(j, 3) = tempArr(k, 3)
+                    
+                    tempArr(k, 1) = tmp1
+                    tempArr(k, 2) = tmp2
+                    tempArr(k, 3) = tmp3
+                End If
+            Next k
+        Next j
+        
+        ' Neue fortlaufende Nummer schreiben (1..n)
+        For j = 1 To UBound(tempArr)
+            ws.Cells(tempArr(j, 3), 4).Value = j
+        Next j
+    Next Bereich
+    
+    MsgBox "Sortierung optimiert! Alle Bereiche sind nun fortlaufend nummeriert."
+End Sub
